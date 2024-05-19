@@ -53,7 +53,7 @@ func main() {
 		nexti := 0
 		for i < len(bencodedValue) {
 			fmt.Println(i)
-			fmt.Println(bencodedValue[i])
+			fmt.Println(bencodedValue[i], 'l')
 			if bencodedValue[i] == 'l' {
 				decoded, nexti = decodeBencode(bencodedValue, i+1)
 			} else if bencodedValue[i] != 'e' {
