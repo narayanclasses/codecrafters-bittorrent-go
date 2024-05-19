@@ -52,6 +52,8 @@ func main() {
 		i := 0
 		nexti := 0
 		for i < len(bencodedValue) {
+			fmt.Println(i)
+			fmt.Println(bencodedValue[i])
 			if bencodedValue[i] == 'l' {
 				decoded, nexti = decodeBencode(bencodedValue, i+1)
 			} else if bencodedValue[i] != 'e' {
@@ -61,8 +63,6 @@ func main() {
 			}
 			i = nexti
 			if decoded != "" {
-				fmt.Println("nikhilk")
-				fmt.Println(decoded)
 				slice = append(slice, decoded)
 			}
 		}
