@@ -61,9 +61,12 @@ func main() {
 			}
 			i = nexti
 			if decoded != "" {
+				fmt.Println("nikhilk")
+				fmt.Println(decoded)
 				slice = append(slice, decoded)
 			}
 		}
+		
 		jsonOutput, _ := json.Marshal(decoded)
 		fmt.Println(string(jsonOutput))
 	} else {
