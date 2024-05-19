@@ -33,7 +33,7 @@ func decodeBencode(bencodedString string, start int) (interface{}, int) {
 		num, _ := strconv.Atoi(bencodedString[start+1 : lastIndex])
 		return num, lastIndex + 1
 	} else {
-		return "", start + 1
+		return nil, start + 1
 	}
 }
 
