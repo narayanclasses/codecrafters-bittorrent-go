@@ -49,12 +49,10 @@ func main() {
 		nexti := 0
 		for i < len(bencodedValue) {
 			var decoded interface{}
-			if bencodedValue[i] == 'l' {
-				decoded, nexti = decodeBencode(bencodedValue, i+1)
-			} else if bencodedValue[i] != 'e' {
-				decoded, nexti = decodeBencode(bencodedValue, i)
-			} else {
+			if bencodedValue[i] == 'l' || bencodedValue[i] == 'e' {
 				nexti = i + 1
+			} else {
+				decoded, nexti = decodeBencode(bencodedValue, i)
 			}
 			i = nexti
 			if decoded != nil {
