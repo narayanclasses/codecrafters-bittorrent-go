@@ -9,10 +9,8 @@ import (
 )
 
 func decodeBencode(bencodedString string, start int) (interface{}, int) {
-	fmt.Println(bencodedString, start, unicode.IsDigit(rune(bencodedString[start])))
 	if unicode.IsDigit(rune(bencodedString[start])) {
 		var firstColonIndex int
-
 		for i := start; i < len(bencodedString); i++ {
 			if bencodedString[i] == ':' {
 				firstColonIndex = i
@@ -20,8 +18,7 @@ func decodeBencode(bencodedString string, start int) (interface{}, int) {
 			}
 		}
 
-		lengthStr := bencodedString[:firstColonIndex]
-
+		lengthStr := bencodedString[start:firstColonIndex]
 		length, _ := strconv.Atoi(lengthStr)
 		return bencodedString[firstColonIndex+1 : firstColonIndex+1+length], firstColonIndex + 1 + length
 
@@ -36,7 +33,7 @@ func decodeBencode(bencodedString string, start int) (interface{}, int) {
 		num, _ := strconv.Atoi(bencodedString[start+1 : lastIndex])
 		return num, lastIndex + 1
 	} else {
-		return "", len(bencodedString)
+		return "", start + 1
 	}
 }
 
@@ -46,13 +43,12 @@ func main() {
 
 	if command == "decode" {
 		bencodedValue := os.Args[2]
-
-		var decoded interface{}
 		slice := []interface{}{}
 
 		i := 0
 		nexti := 0
 		for i < len(bencodedValue) {
+			var decoded interface{}
 			if bencodedValue[i] == 'l' {
 				decoded, nexti = decodeBencode(bencodedValue, i+1)
 			} else if bencodedValue[i] != 'e' {
@@ -61,12 +57,12 @@ func main() {
 				nexti = i + 1
 			}
 			i = nexti
-			if decoded != "" {
+			if decoded != nil {
 				slice = append(slice, decoded)
 			}
 		}
 
-		jsonOutput, _ := json.Marshal(decoded)
+		jsonOutput, _ := json.Marshal(slice)
 		fmt.Println(string(jsonOutput))
 	} else {
 		fmt.Println("Unknown command: " + command)
