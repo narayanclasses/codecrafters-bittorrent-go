@@ -9,6 +9,7 @@ import (
 )
 
 func decodeBencode(bencodedString string, start int) (interface{}, int) {
+	fmt.Println(start, unicode.IsDigit(rune(bencodedString[start])))
 	if unicode.IsDigit(rune(bencodedString[start])) {
 		var firstColonIndex int
 
@@ -52,8 +53,6 @@ func main() {
 		i := 0
 		nexti := 0
 		for i < len(bencodedValue) {
-			fmt.Println(i)
-			fmt.Println(bencodedValue[i], 'l')
 			if bencodedValue[i] == 'l' {
 				decoded, nexti = decodeBencode(bencodedValue, i+1)
 			} else if bencodedValue[i] != 'e' {
@@ -66,7 +65,7 @@ func main() {
 				slice = append(slice, decoded)
 			}
 		}
-		
+
 		jsonOutput, _ := json.Marshal(decoded)
 		fmt.Println(string(jsonOutput))
 	} else {
