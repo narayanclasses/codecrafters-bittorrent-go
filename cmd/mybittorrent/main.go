@@ -9,7 +9,7 @@ import (
 )
 
 func decodeBencode(bencodedString string, start int) (interface{}, int) {
-	fmt.Println(start, unicode.IsDigit(rune(bencodedString[start])))
+	fmt.Println(bencodedString, start, unicode.IsDigit(rune(bencodedString[start])))
 	if unicode.IsDigit(rune(bencodedString[start])) {
 		var firstColonIndex int
 
