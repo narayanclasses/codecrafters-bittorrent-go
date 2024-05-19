@@ -1,14 +1,11 @@
 package main
 
 import (
-	// Uncomment this line to pass the first stage
-
 	"encoding/json"
 	"fmt"
 	"os"
 	"strconv"
 	"unicode"
-	// bencode "github.com/jackpal/bencode-go" // Available if you need it!
 )
 
 // Example:
@@ -31,10 +28,15 @@ func decodeBencode(bencodedString string) (interface{}, error) {
 		if err != nil {
 			return "", err
 		}
-
 		return bencodedString[firstColonIndex+1 : firstColonIndex+1+length], nil
+	} else if bencodedString[0] == 'i' {
+		num, err := strconv.Atoi(bencodedString[1 : len(bencodedString)-1])
+		if err != nil {
+			return nil, err
+		}
+		return num, nil
 	} else {
-		return "", fmt.Errorf("Only strings are supported at the moment")
+		return "", fmt.Errorf("unsupported data type")
 	}
 }
 
