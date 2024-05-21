@@ -51,12 +51,12 @@ func reverse(slice *[]interface{}) {
 	}
 }
 
-func calculateSHA1(input string) string {
+func calculateSHA1(input []byte) string {
 	// Create a new SHA1 hash
 	hasher := sha1.New()
 
-	// Write the input string to the hasher
-	hasher.Write([]byte(input))
+	// Write the input byte slice to the hasher
+	hasher.Write(input)
 
 	// Calculate the SHA1 hash
 	hashInBytes := hasher.Sum(nil)
@@ -147,10 +147,17 @@ func main() {
 		fmt.Println(decodeString(bencodedValue))
 	} else if command == "info" {
 		content, _ := os.ReadFile(filenme)
+		fmt.Println(len(content))
 		bencodedValue := string(content)
-		fmt.Println(bencodedValue)
+		fmt.Println(len(bencodedValue))
 		decodeString(bencodedValue)
-		fmt.Printf("\nTracker URL: %s\nLength: %d\nInfo Hash: %s\n", tracker, fileLength, infoHash)
+		for i := 0; i < len(bencodedValue); i++ {
+			if bencodedValue[i:i+4] == "info" {
+				infoHash = calculateSHA1([]byte(bencodedValue[i+5 : len(bencodedValue)-1]))
+				break
+			}
+		}
+		fmt.Printf("Tracker URL: %s\nLength: %d\nInfo Hash: %s\n", tracker, fileLength, infoHash)
 	} else {
 		fmt.Println("Unknown command: " + command)
 		os.Exit(1)
