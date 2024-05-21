@@ -1,6 +1,8 @@
 package main
 
 import (
+	"crypto/sha1"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -49,8 +51,25 @@ func reverse(slice *[]interface{}) {
 	}
 }
 
+func calculateSHA1(input string) string {
+	// Create a new SHA1 hash
+	hasher := sha1.New()
+
+	// Write the input string to the hasher
+	hasher.Write([]byte(input))
+
+	// Calculate the SHA1 hash
+	hashInBytes := hasher.Sum(nil)
+
+	// Convert the hash to a hexadecimal string
+	hashString := hex.EncodeToString(hashInBytes)
+
+	return hashString
+}
+
 var tracker string
-var filelength int
+var fileLength int
+var infoHash string
 
 func decodeString(bencodedValue string) string {
 	stack := &Stack{}
@@ -69,7 +88,11 @@ func decodeString(bencodedValue string) string {
 							tracker = list[j-1].(string)
 						}
 						if list[j].(string) == "length" {
-							filelength = list[j-1].(int)
+							fileLength = list[j-1].(int)
+						}
+						if list[j].(string) == "info" {
+							infoJson, _ := json.Marshal(list[j-1])
+							infoHash = calculateSHA1(string(infoJson))
 						}
 						benMap[list[j].(string)] = list[j-1]
 					}
@@ -129,8 +152,8 @@ func main() {
 	} else if command == "info" {
 		content, _ := os.ReadFile(filenme)
 		decodeString(string(content))
-		fmt.Println(tracker, filelength)
-		fmt.Printf("Tracker URL: %s\nLength: %d", tracker, filelength)
+		fmt.Println(tracker, fileLength)
+		fmt.Printf("Tracker URL: %s\nLength: %d\nInfo Hash: %s\n", tracker, fileLength, infoHash)
 	} else {
 		fmt.Println("Unknown command: " + command)
 		os.Exit(1)
