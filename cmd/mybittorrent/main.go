@@ -2,7 +2,6 @@ package main
 
 import (
 	"crypto/sha1"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -52,19 +51,11 @@ func reverse(slice *[]interface{}) {
 }
 
 func calculateSHA1(input []byte) string {
-	// Create a new SHA1 hash
-	hasher := sha1.New()
-
-	// Write the input byte slice to the hasher
-	hasher.Write(input)
-
-	// Calculate the SHA1 hash
-	hashInBytes := hasher.Sum(nil)
-
-	// Convert the hash to a hexadecimal string
-	hashString := hex.EncodeToString(hashInBytes)
-
-	return hashString
+	sha1Hash := sha1.New()
+	sha1Hash.Write(input)
+	hashBytes := sha1Hash.Sum(nil)
+	sha1String := fmt.Sprintf("%x", hashBytes)
+	return sha1String
 }
 
 var tracker string
@@ -147,13 +138,11 @@ func main() {
 		fmt.Println(decodeString(bencodedValue))
 	} else if command == "info" {
 		content, _ := os.ReadFile(filenme)
-		fmt.Println(len(content))
 		bencodedValue := string(content)
-		fmt.Println(len(bencodedValue))
 		decodeString(bencodedValue)
 		for i := 0; i < len(bencodedValue); i++ {
 			if bencodedValue[i:i+4] == "info" {
-				infoHash = calculateSHA1([]byte(bencodedValue[i+5 : len(bencodedValue)-1]))
+				infoHash = calculateSHA1([]byte(bencodedValue[i+4 : len(bencodedValue)-1]))
 				break
 			}
 		}
