@@ -152,7 +152,6 @@ func main() {
 	} else if command == "info" {
 		content, _ := os.ReadFile(filenme)
 		decodeString(string(content))
-		fmt.Println(tracker, fileLength)
 		fmt.Printf("Tracker URL: %s\nLength: %d\nInfo Hash: %s\n", tracker, fileLength, infoHash)
 	} else {
 		fmt.Println("Unknown command: " + command)
