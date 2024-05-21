@@ -150,7 +150,7 @@ func main() {
 		bencodedValue := string(content)
 		fmt.Println(bencodedValue)
 		decodeString(bencodedValue)
-		fmt.Printf("Tracker URL: %s\nLength: %d\nInfo Hash: %s\n", tracker, fileLength, infoHash)
+		fmt.Printf("\nTracker URL: %s\nLength: %d\nInfo Hash: %s\n", tracker, fileLength, infoHash)
 	} else {
 		fmt.Println("Unknown command: " + command)
 		os.Exit(1)
