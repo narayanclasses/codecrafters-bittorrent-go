@@ -90,10 +90,6 @@ func decodeString(bencodedValue string) string {
 						if list[j].(string) == "length" {
 							fileLength = list[j-1].(int)
 						}
-						if list[j].(string) == "info" {
-							infoJson, _ := json.Marshal(list[j-1])
-							infoHash = calculateSHA1(string(infoJson))
-						}
 						benMap[list[j].(string)] = list[j-1]
 					}
 					stack.Pop()
@@ -151,7 +147,9 @@ func main() {
 		fmt.Println(decodeString(bencodedValue))
 	} else if command == "info" {
 		content, _ := os.ReadFile(filenme)
-		decodeString(string(content))
+		bencodedValue := string(content)
+		decodeString(bencodedValue)
+		
 		fmt.Printf("Tracker URL: %s\nLength: %d\nInfo Hash: %s\n", tracker, fileLength, infoHash)
 	} else {
 		fmt.Println("Unknown command: " + command)
