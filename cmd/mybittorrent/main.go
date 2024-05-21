@@ -49,69 +49,88 @@ func reverse(slice *[]interface{}) {
 	}
 }
 
+var tracker string
+var filelength int
+
+func decodeString(bencodedValue string) string {
+	stack := &Stack{}
+	i := 0
+	for i < len(bencodedValue) {
+		if bencodedValue[i] == 'l' || bencodedValue[i] == 'd' {
+			stack.Push(bencodedValue[i])
+			i = i + 1
+		} else if bencodedValue[i] == 'e' {
+			list := []interface{}{}
+			for {
+				if reflect.TypeOf(stack.Peek()).Kind() == reflect.Uint8 && stack.Peek().(uint8) == 'd' {
+					benMap := make(map[string]interface{})
+					for j := len(list) - 1; j >= 0; j -= 2 {
+						if list[j].(string) == "announce" {
+							tracker = list[j-1].(string)
+						}
+						if list[j].(string) == "length" {
+							filelength = list[j-1].(int)
+						}
+						benMap[list[j].(string)] = list[j-1]
+					}
+					stack.Pop()
+					stack.Push(benMap)
+					break
+				} else if reflect.TypeOf(stack.Peek()).Kind() == reflect.Uint8 && stack.Peek().(uint8) == 'l' {
+					stack.Pop()
+					reverse(&list)
+					stack.Push(list)
+					break
+				} else {
+					list = append(list, stack.Peek())
+					stack.Pop()
+				}
+			}
+			i = i + 1
+		} else if unicode.IsDigit(rune(bencodedValue[i])) {
+			var firstColonIndex int
+			for j := i; j < len(bencodedValue); j++ {
+				if bencodedValue[j] == ':' {
+					firstColonIndex = j
+					break
+				}
+			}
+			lengthStr := bencodedValue[i:firstColonIndex]
+			length, _ := strconv.Atoi(lengthStr)
+
+			letter := bencodedValue[firstColonIndex+1 : firstColonIndex+1+length]
+			stack.Push(letter)
+			i = firstColonIndex + 1 + length
+		} else if bencodedValue[i] == 'i' {
+			lastIndex := 0
+			for j := i + 1; j < len(bencodedValue); j++ {
+				if bencodedValue[j] == 'e' {
+					lastIndex = j
+					break
+				}
+			}
+			num, _ := strconv.Atoi(bencodedValue[i+1 : lastIndex])
+			stack.Push(num)
+			i = lastIndex + 1
+		}
+	}
+	jsonOutput, _ := json.Marshal(stack.Peek())
+	return string(jsonOutput)
+}
+
 func main() {
 
 	command := os.Args[1]
+	filenme := os.Args[2]
 
 	if command == "decode" {
 		bencodedValue := os.Args[2]
-		stack := &Stack{}
-		i := 0
-		for i < len(bencodedValue) {
-			if bencodedValue[i] == 'l' || bencodedValue[i] == 'd' {
-				stack.Push(bencodedValue[i])
-				i = i + 1
-			} else if bencodedValue[i] == 'e' {
-				list := []interface{}{}
-				for {
-					if reflect.TypeOf(stack.Peek()).Kind() == reflect.Uint8 && stack.Peek().(uint8) == 'd' {
-						benMap := make(map[string]interface{})
-						for j := len(list) - 1; j >= 0; j -= 2 {
-							benMap[list[j].(string)] = list[j-1]
-						}
-						stack.Pop()
-						stack.Push(benMap)
-						break
-					} else if reflect.TypeOf(stack.Peek()).Kind() == reflect.Uint8 && stack.Peek().(uint8) == 'l' {
-						stack.Pop()
-						reverse(&list)
-						stack.Push(list)
-						break
-					} else {
-						list = append(list, stack.Peek())
-						stack.Pop()
-					}
-				}
-				i = i + 1
-			} else if unicode.IsDigit(rune(bencodedValue[i])) {
-				var firstColonIndex int
-				for j := i; j < len(bencodedValue); j++ {
-					if bencodedValue[j] == ':' {
-						firstColonIndex = j
-						break
-					}
-				}
-				lengthStr := bencodedValue[i:firstColonIndex]
-				length, _ := strconv.Atoi(lengthStr)
-
-				letter := bencodedValue[firstColonIndex+1 : firstColonIndex+1+length]
-				stack.Push(letter)
-				i = firstColonIndex + 1 + length
-			} else if bencodedValue[i] == 'i' {
-				lastIndex := 0
-				for j := i + 1; j < len(bencodedValue); j++ {
-					if bencodedValue[j] == 'e' {
-						lastIndex = j
-						break
-					}
-				}
-				num, _ := strconv.Atoi(bencodedValue[i+1 : lastIndex])
-				stack.Push(num)
-				i = lastIndex + 1
-			}
-		}
-		jsonOutput, _ := json.Marshal(stack.Peek())
-		fmt.Println(string(jsonOutput))
+		fmt.Println(decodeString(bencodedValue))
+	} else if command == "info" {
+		content, _ := os.ReadFile(filenme)
+		decodeString(string(content))
+		fmt.Println(tracker, filelength)
+		fmt.Printf("Tracker URL: %s\nLength: %d", tracker, filelength)
 	} else {
 		fmt.Println("Unknown command: " + command)
 		os.Exit(1)
