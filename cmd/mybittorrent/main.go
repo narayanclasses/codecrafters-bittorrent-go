@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"reflect"
 	"strconv"
 	"unicode"
 )
@@ -57,20 +58,28 @@ func main() {
 		stack := &Stack{}
 		i := 0
 		for i < len(bencodedValue) {
-			if bencodedValue[i] == 'l' {
-				stack.Push('l')
+			if bencodedValue[i] == 'l' || bencodedValue[i] == 'd' {
+				stack.Push(bencodedValue[i])
 				i = i + 1
 			} else if bencodedValue[i] == 'e' {
 				list := []interface{}{}
 				for {
-					if stack.Peek() != 'l' {
-						list = append(list, stack.Peek())
+					if reflect.TypeOf(stack.Peek()).Kind() == reflect.Uint8 && stack.Peek().(uint8) == 'd' {
+						benMap := make(map[string]interface{})
+						for j := len(list) - 1; j >= 0; j -= 2 {
+							benMap[list[j].(string)] = list[j-1]
+						}
 						stack.Pop()
-					} else {
+						stack.Push(benMap)
+						break
+					} else if reflect.TypeOf(stack.Peek()).Kind() == reflect.Uint8 && stack.Peek().(uint8) == 'l' {
 						stack.Pop()
 						reverse(&list)
 						stack.Push(list)
 						break
+					} else {
+						list = append(list, stack.Peek())
+						stack.Pop()
 					}
 				}
 				i = i + 1
