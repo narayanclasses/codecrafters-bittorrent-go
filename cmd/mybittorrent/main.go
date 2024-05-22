@@ -58,8 +58,14 @@ func calculateSHA1(input []byte) string {
 	return sha1String
 }
 
+func getHexValue(input []byte) string {
+	return fmt.Sprintf("%x", input)
+}
+
 var tracker string
 var fileLength int
+var pieceLength int
+var piecesHash string
 var infoHash string
 
 func decodeString(bencodedValue string) string {
@@ -80,6 +86,14 @@ func decodeString(bencodedValue string) string {
 						}
 						if list[j].(string) == "length" {
 							fileLength = list[j-1].(int)
+						}
+						if list[j].(string) == "piece length" {
+							pieceLength = list[j-1].(int)
+						}
+						if list[j].(string) == "pieces" {
+							for k := 0; k < len(list[j-1].(string)); k += 20 {
+								piecesHash += "\n" + getHexValue([]byte((list[j-1].(string))[k:k+20]))
+							}
 						}
 						benMap[list[j].(string)] = list[j-1]
 					}
@@ -146,7 +160,7 @@ func main() {
 				break
 			}
 		}
-		fmt.Printf("Tracker URL: %s\nLength: %d\nInfo Hash: %s\n", tracker, fileLength, infoHash)
+		fmt.Printf("Tracker URL: %s\nLength: %d\nInfo Hash: %s\nPiece Length: %d\nPiece Hashes:%s\n", tracker, fileLength, infoHash, pieceLength, piecesHash)
 	} else {
 		fmt.Println("Unknown command: " + command)
 		os.Exit(1)
