@@ -160,7 +160,6 @@ func fillInfo(fileName string) {
 	bencodedValue := string(content)
 	decodeString(bencodedValue)
 	for i := 0; i < len(bencodedValue); i++ {
-		fmt.Println(len(bencodedValue))
 		if bencodedValue[i:i+4] == "info" {
 			infoHash = calculateSHA1([]byte(bencodedValue[i+4 : len(bencodedValue)-1]))
 			break
@@ -204,7 +203,10 @@ func main() {
 
 	command := os.Args[1]
 	fileName := os.Args[2]
-	serverAddress := os.Args[3]
+	serverAddress := ""
+	if len(os.Args) >= 4 {
+		serverAddress = os.Args[3]
+	}
 	if command == "decode" {
 		bencodedValue := os.Args[2]
 		fmt.Println(decodeString(bencodedValue))
