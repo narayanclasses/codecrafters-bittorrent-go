@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/sha1"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -169,9 +170,11 @@ func main() {
 		fmt.Printf("Tracker URL: %s\nLength: %d\nInfo Hash: %s\nPiece Length: %d\nPiece Hashes:%s\n", tracker, fileLength, infoHash, pieceLength, piecesHash)
 	} else if command == "peers" {
 		fillInfo(fileName)
+
+		infoHashBytes, _ := hex.DecodeString(infoHash)
 		// Query parameters
 		params := url.Values{}
-		params.Add("info_hash", url.QueryEscape(infoHash))
+		params.Add("info_hash", url.QueryEscape(string(infoHashBytes)))
 		params.Add("peer_id", "00112233445566778899")
 		params.Add("port", "6881")
 		params.Add("uploaded", "0")
