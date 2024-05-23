@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -192,6 +193,7 @@ func main() {
 
 	command := os.Args[1]
 	fileName := os.Args[2]
+	serverAddress := os.Args[3]
 	if command == "decode" {
 		bencodedValue := os.Args[2]
 		fmt.Println(decodeString(bencodedValue))
@@ -202,6 +204,22 @@ func main() {
 		fillInfo(fileName)
 		makeRequest()
 		fmt.Println(peers)
+	} else if command == "handshake" {
+		conn, _ := net.Dial("tcp", serverAddress)
+		defer conn.Close()
+
+		// Preparing handshake message
+		handshakeMessage := []byte{19}
+		handshakeMessage = append(handshakeMessage, []byte("BitTorrent protocol")...)
+		handshakeMessage = append(handshakeMessage, []byte{0, 0, 0, 0, 0, 0, 0, 0}...)
+		infoHashBytes, _ := hex.DecodeString(infoHash)
+		handshakeMessage = append(handshakeMessage, infoHashBytes...)
+		handshakeMessage = append(handshakeMessage, []byte("00112233445566778899")...)
+
+		conn.Write(handshakeMessage)
+		buffer := make([]byte, 512)
+		conn.Read(buffer)
+		fmt.Println(string(buffer))
 	} else {
 		fmt.Println("Unknown command: " + command)
 		os.Exit(1)
