@@ -198,7 +198,6 @@ func main() {
 		defer response.Body.Close()
 		body, _ := io.ReadAll(response.Body)
 		decodeString(string(body))
-		fmt.Println(string(body))
 		fmt.Println(peers)
 	} else {
 		fmt.Println("Unknown command: " + command)
