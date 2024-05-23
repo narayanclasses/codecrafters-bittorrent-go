@@ -166,6 +166,28 @@ func fillInfo(fileName string) {
 	}
 }
 
+func makeRequest() {
+	infoHashBytes, _ := hex.DecodeString(infoHash)
+	// Query parameters
+	params := url.Values{}
+	params.Add("info_hash", string(infoHashBytes))
+	params.Add("peer_id", "00112233445566778899")
+	params.Add("port", "6881")
+	params.Add("uploaded", "0")
+	params.Add("downloaded", "0")
+	params.Add("left", fmt.Sprint(fileLength))
+	params.Add("compact", "1")
+
+	// Construct the final URL with query parameters
+	finalURL := fmt.Sprintf("%s?%s", tracker, params.Encode())
+
+	// Making the GET request
+	response, _ := http.Get(finalURL)
+	defer response.Body.Close()
+	body, _ := io.ReadAll(response.Body)
+	decodeString(string(body))
+}
+
 func main() {
 
 	command := os.Args[1]
@@ -178,26 +200,7 @@ func main() {
 		fmt.Printf("Tracker URL: %s\nLength: %d\nInfo Hash: %s\nPiece Length: %d\nPiece Hashes:%s\n", tracker, fileLength, infoHash, pieceLength, piecesHash)
 	} else if command == "peers" {
 		fillInfo(fileName)
-
-		infoHashBytes, _ := hex.DecodeString(infoHash)
-		// Query parameters
-		params := url.Values{}
-		params.Add("info_hash", string(infoHashBytes))
-		params.Add("peer_id", "00112233445566778899")
-		params.Add("port", "6881")
-		params.Add("uploaded", "0")
-		params.Add("downloaded", "0")
-		params.Add("left", fmt.Sprint(fileLength))
-		params.Add("compact", "1")
-
-		// Construct the final URL with query parameters
-		finalURL := fmt.Sprintf("%s?%s", tracker, params.Encode())
-
-		// Making the GET request
-		response, _ := http.Get(finalURL)
-		defer response.Body.Close()
-		body, _ := io.ReadAll(response.Body)
-		decodeString(string(body))
+		makeRequest()
 		fmt.Println(peers)
 	} else {
 		fmt.Println("Unknown command: " + command)
