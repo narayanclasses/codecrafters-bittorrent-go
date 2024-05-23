@@ -245,10 +245,7 @@ func main() {
 		defer conn.Close()
 		conn.Write(getHandShakeMessage())
 		buffer := make([]byte, 68)
-		conn.Read(buffer)
-		fmt.Println(buffer)
 		for {
-			// some comment
 			conn.Read(buffer)
 			fmt.Println(buffer)
 			time.Sleep(3 * time.Second)
