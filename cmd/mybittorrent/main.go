@@ -71,6 +71,7 @@ var fileLength int
 var pieceLength int
 var piecesHash string
 var infoHash string
+var peers string
 
 func decodeString(bencodedValue string) string {
 	stack := &Stack{}
@@ -97,6 +98,11 @@ func decodeString(bencodedValue string) string {
 						if list[j].(string) == "pieces" {
 							for k := 0; k < len(list[j-1].(string)); k += 20 {
 								piecesHash += "\n" + getHexValue([]byte((list[j-1].(string))[k:k+20]))
+							}
+						}
+						if list[j].(string) == "peers" {
+							for k := 0; k < len(list[j-1].(string)); k += 6 {
+								peers += (list[j-1].(string))[k:k+4] + (list[j-1].(string))[k+4:k+6] + "\n"
 							}
 						}
 						benMap[list[j].(string)] = list[j-1]
@@ -189,7 +195,9 @@ func main() {
 		response, _ := http.Get(finalURL)
 		defer response.Body.Close()
 		body, _ := io.ReadAll(response.Body)
+		decodeString(string(body))
 		fmt.Println(string(body))
+		fmt.Println(peers)
 	} else {
 		fmt.Println("Unknown command: " + command)
 		os.Exit(1)
