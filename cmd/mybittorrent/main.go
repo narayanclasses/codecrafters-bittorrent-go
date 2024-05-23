@@ -251,7 +251,7 @@ func main() {
 			// fmt.Println("Before sleep")
 			conn.Read(buffer)
 			fmt.Println(buffer)
-			time.Sleep(1 * time.Second)
+			time.Sleep(3 * time.Second)
 			// fmt.Println("After sleep")
 			// conn.Read(buffer)
 			// fmt.Println(buffer)
