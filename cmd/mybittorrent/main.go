@@ -205,8 +205,8 @@ func main() {
 		makeRequest()
 		fmt.Println(peers)
 	} else if command == "handshake" {
+		fillInfo(fileName)
 		conn, _ := net.Dial("tcp", serverAddress)
-		fmt.Println("connection established properly")
 		// Preparing handshake message
 		handshakeMessage := []byte{19}
 		handshakeMessage = append(handshakeMessage, []byte("BitTorrent protocol")...)
