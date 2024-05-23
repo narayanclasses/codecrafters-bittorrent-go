@@ -240,14 +240,11 @@ func main() {
 	} else if command == "download_piece" {
 		fillInfo(fileName)
 		makeRequest()
-		fmt.Println(peersArray[0])
 		conn, _ := net.Dial("tcp", peersArray[0])
 		defer conn.Close()
 		conn.Write(getHandShakeMessage())
 		buffer := make([]byte, 4096)
-
 		fmt.Println(buffer)
-
 	} else {
 		fmt.Println("Unknown command: " + command)
 		os.Exit(1)
