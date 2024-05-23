@@ -102,8 +102,7 @@ func decodeString(bencodedValue string) string {
 						}
 						if list[j].(string) == "peers" {
 							for k := 0; k < len(list[j-1].(string)); k += 6 {
-								peerHashBytes, _ := hex.DecodeString((list[j-1].(string))[k : k+6])
-								fmt.Println(string(peerHashBytes))
+								fmt.Println([]byte(list[j-1].(string)))
 								peers += (list[j-1].(string))[k:k+4] + (list[j-1].(string))[k+4:k+6] + "\n"
 							}
 						}
