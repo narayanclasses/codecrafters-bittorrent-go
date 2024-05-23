@@ -104,7 +104,7 @@ func decodeString(bencodedValue string) string {
 						if list[j].(string) == "peers" {
 							peersString := list[j-1].(string)
 							for k := 0; k < len(peersString); k += 6 {
-								peers += strconv.Itoa(int(peersString[k])) + "." + strconv.Itoa(int(peersString[k+1])) + "." + strconv.Itoa(int(peersString[k+2])) + strconv.Itoa(int(peersString[k+3])) + ":" + strconv.Itoa(int((binary.BigEndian.Uint16)([]byte(peersString[k+4:k+6])))) + "\n"
+								peers += strconv.Itoa(int(peersString[k])) + "." + strconv.Itoa(int(peersString[k+1])) + "." + strconv.Itoa(int(peersString[k+2])) + "." + strconv.Itoa(int(peersString[k+3])) + ":" + strconv.Itoa(int((binary.BigEndian.Uint16)([]byte(peersString[k+4:k+6])))) + "\n"
 							}
 						}
 						benMap[list[j].(string)] = list[j-1]
