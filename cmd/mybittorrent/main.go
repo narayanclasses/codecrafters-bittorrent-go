@@ -206,13 +206,13 @@ func main() {
 		fmt.Println(peers)
 	} else if command == "handshake" {
 		conn, _ := net.Dial("tcp", serverAddress)
-		defer conn.Close()
 
 		// Preparing handshake message
 		handshakeMessage := []byte{19}
 		handshakeMessage = append(handshakeMessage, []byte("BitTorrent protocol")...)
 		handshakeMessage = append(handshakeMessage, []byte{0, 0, 0, 0, 0, 0, 0, 0}...)
 		infoHashBytes, _ := hex.DecodeString(infoHash)
+		fmt.Println(infoHashBytes)
 		handshakeMessage = append(handshakeMessage, infoHashBytes...)
 		handshakeMessage = append(handshakeMessage, []byte("00112233445566778899")...)
 
