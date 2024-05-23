@@ -248,13 +248,9 @@ func main() {
 		conn.Read(buffer)
 		fmt.Println(buffer)
 		for {
-			// fmt.Println("Before sleep")
 			conn.Read(buffer)
 			fmt.Println(buffer)
 			time.Sleep(3 * time.Second)
-			// fmt.Println("After sleep")
-			// conn.Read(buffer)
-			// fmt.Println(buffer)
 		}
 	} else {
 		fmt.Println("Unknown command: " + command)
