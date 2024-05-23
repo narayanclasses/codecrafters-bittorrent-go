@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/sha1"
+	"encoding/binary"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -101,9 +102,9 @@ func decodeString(bencodedValue string) string {
 							}
 						}
 						if list[j].(string) == "peers" {
-							for k := 0; k < len(list[j-1].(string)); k += 6 {
-								fmt.Println([]byte(list[j-1].(string)))
-								peers += (list[j-1].(string))[k:k+4] + (list[j-1].(string))[k+4:k+6] + "\n"
+							peersString := list[j-1].(string)
+							for k := 0; k < len(peersString); k += 6 {
+								peers += strconv.Itoa(int(peersString[k])) + "." + strconv.Itoa(int(peersString[k+1])) + "." + strconv.Itoa(int(peersString[k+2])) + strconv.Itoa(int(peersString[k+3])) + ":" + strconv.Itoa(int((binary.BigEndian.Uint16)([]byte(peersString[k+4:k+6])))) + "\n"
 							}
 						}
 						benMap[list[j].(string)] = list[j-1]
