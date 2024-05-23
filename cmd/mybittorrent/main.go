@@ -4,6 +4,9 @@ import (
 	"crypto/sha1"
 	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
+	"net/url"
 	"os"
 	"reflect"
 	"strconv"
@@ -142,25 +145,48 @@ func decodeString(bencodedValue string) string {
 	return string(jsonOutput)
 }
 
+func fillInfo(fileName string) {
+	content, _ := os.ReadFile(fileName)
+	bencodedValue := string(content)
+	decodeString(bencodedValue)
+	for i := 0; i < len(bencodedValue); i++ {
+		if bencodedValue[i:i+4] == "info" {
+			infoHash = calculateSHA1([]byte(bencodedValue[i+4 : len(bencodedValue)-1]))
+			break
+		}
+	}
+}
+
 func main() {
 
 	command := os.Args[1]
-	filenme := os.Args[2]
-
+	fileName := os.Args[2]
 	if command == "decode" {
 		bencodedValue := os.Args[2]
 		fmt.Println(decodeString(bencodedValue))
 	} else if command == "info" {
-		content, _ := os.ReadFile(filenme)
-		bencodedValue := string(content)
-		decodeString(bencodedValue)
-		for i := 0; i < len(bencodedValue); i++ {
-			if bencodedValue[i:i+4] == "info" {
-				infoHash = calculateSHA1([]byte(bencodedValue[i+4 : len(bencodedValue)-1]))
-				break
-			}
-		}
+		fillInfo(fileName)
 		fmt.Printf("Tracker URL: %s\nLength: %d\nInfo Hash: %s\nPiece Length: %d\nPiece Hashes:%s\n", tracker, fileLength, infoHash, pieceLength, piecesHash)
+	} else if command == "peers" {
+		fillInfo(fileName)
+		// Query parameters
+		params := url.Values{}
+		params.Add("info_hash", "%d6%9f%91%e6%b2%ae%4c%54%24%68%d1%07%3a%71%d4%ea%13%87%9a%7f")
+		params.Add("peer_id", "00112233445566778899")
+		params.Add("port", "6881")
+		params.Add("uploaded", "0")
+		params.Add("downloaded", "0")
+		params.Add("left", string(fileLength))
+		params.Add("compact", "1")
+
+		// Construct the final URL with query parameters
+		finalURL := fmt.Sprintf("%s?%s", tracker, params.Encode())
+
+		// Making the GET request
+		response, _ := http.Get(finalURL)
+		defer response.Body.Close()
+		body, _ := io.ReadAll(response.Body)
+		fmt.Println(string(body))
 	} else {
 		fmt.Println("Unknown command: " + command)
 		os.Exit(1)
