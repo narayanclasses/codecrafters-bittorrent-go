@@ -248,9 +248,10 @@ func main() {
 		conn.Read(buffer)
 		fmt.Println(buffer)
 		for {
+			time.Sleep(3 * time.Second)
 			conn.Read(buffer)
 			fmt.Println(buffer)
-			time.Sleep(3 * time.Second)
+			
 		}
 
 	} else {
