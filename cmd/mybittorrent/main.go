@@ -239,7 +239,8 @@ func main() {
 		fmt.Printf("Peer ID: %s\n", getHexValue(buffer[48:68]))
 	} else if command == "download_piece" {
 		fillInfo(fileName)
-		fmt.Println(peers)
+		makeRequest()
+		fmt.Println(peersArray[0])
 		conn, _ := net.Dial("tcp", peersArray[0])
 		defer conn.Close()
 		conn.Write(getHandShakeMessage())
