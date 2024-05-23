@@ -13,6 +13,7 @@ import (
 	"os"
 	"reflect"
 	"strconv"
+	"time"
 	"unicode"
 )
 
@@ -244,10 +245,12 @@ func main() {
 		conn, _ := net.Dial("tcp", peersArray[0])
 		defer conn.Close()
 		conn.Write(getHandShakeMessage())
-		buffer := make([]byte, 100)
-		conn.Read(buffer)
-		for i := 0; i < len(buffer); i++ {
-			fmt.Println(i, buffer[i])
+		buffer := make([]byte, 68)
+
+		for {
+			conn.Read(buffer)
+			fmt.Println(buffer)
+			time.Sleep(3 * time.Second)
 		}
 	} else {
 		fmt.Println("Unknown command: " + command)
