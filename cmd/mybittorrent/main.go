@@ -160,6 +160,7 @@ func fillInfo(fileName string) {
 	bencodedValue := string(content)
 	decodeString(bencodedValue)
 	for i := 0; i < len(bencodedValue); i++ {
+		fmt.Println(len(bencodedValue))
 		if bencodedValue[i:i+4] == "info" {
 			infoHash = calculateSHA1([]byte(bencodedValue[i+4 : len(bencodedValue)-1]))
 			break
