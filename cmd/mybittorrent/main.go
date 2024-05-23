@@ -189,6 +189,16 @@ func makeRequest() {
 	decodeString(string(body))
 }
 
+func getHandShakeMessage() []byte {
+	handshakeMessage := []byte{19}
+	handshakeMessage = append(handshakeMessage, []byte("BitTorrent protocol")...)
+	handshakeMessage = append(handshakeMessage, []byte{0, 0, 0, 0, 0, 0, 0, 0}...)
+	infoHashBytes, _ := hex.DecodeString(infoHash)
+	handshakeMessage = append(handshakeMessage, infoHashBytes...)
+	handshakeMessage = append(handshakeMessage, []byte("00112233445566778899")...)
+	return handshakeMessage
+}
+
 func main() {
 
 	command := os.Args[1]
@@ -207,15 +217,7 @@ func main() {
 	} else if command == "handshake" {
 		fillInfo(fileName)
 		conn, _ := net.Dial("tcp", serverAddress)
-		// Preparing handshake message
-		handshakeMessage := []byte{19}
-		handshakeMessage = append(handshakeMessage, []byte("BitTorrent protocol")...)
-		handshakeMessage = append(handshakeMessage, []byte{0, 0, 0, 0, 0, 0, 0, 0}...)
-		infoHashBytes, _ := hex.DecodeString(infoHash)
-		handshakeMessage = append(handshakeMessage, infoHashBytes...)
-		handshakeMessage = append(handshakeMessage, []byte("00112233445566778899")...)
-
-		conn.Write(handshakeMessage)
+		conn.Write(getHandShakeMessage())
 		buffer := make([]byte, 512)
 		conn.Read(buffer)
 		fmt.Printf("Peer ID: %s\n", getHexValue(buffer[48:68]))
