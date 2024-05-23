@@ -247,11 +247,11 @@ func main() {
 		buffer := make([]byte, 68)
 		conn.Read(buffer)
 		fmt.Println(buffer)
-		for {
-			conn.Read(buffer)
-			fmt.Println(buffer)
-			time.Sleep(3 * time.Second)
-		}
+		// for {
+		// 	conn.Read(buffer)
+		// 	fmt.Println(buffer)
+		// 	time.Sleep(3 * time.Second)
+		// }
 
 	} else {
 		fmt.Println("Unknown command: " + command)
