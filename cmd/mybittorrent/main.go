@@ -248,6 +248,7 @@ func main() {
 		conn.Read(buffer)
 		fmt.Println(buffer)
 		for {
+			// some comment
 			conn.Read(buffer)
 			fmt.Println(buffer)
 			time.Sleep(3 * time.Second)
