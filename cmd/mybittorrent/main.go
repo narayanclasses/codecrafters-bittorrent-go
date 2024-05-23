@@ -176,7 +176,7 @@ func main() {
 		params.Add("port", "6881")
 		params.Add("uploaded", "0")
 		params.Add("downloaded", "0")
-		params.Add("left", string(fileLength))
+		params.Add("left", fmt.Sprint(fileLength))
 		params.Add("compact", "1")
 
 		// Construct the final URL with query parameters
