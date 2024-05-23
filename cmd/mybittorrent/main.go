@@ -74,6 +74,7 @@ var pieceLength int
 var piecesHash string
 var infoHash string
 var peers string
+var peersArray []string
 
 func decodeString(bencodedValue string) string {
 	stack := &Stack{}
@@ -105,7 +106,9 @@ func decodeString(bencodedValue string) string {
 						if list[j].(string) == "peers" {
 							peersString := list[j-1].(string)
 							for k := 0; k < len(peersString); k += 6 {
-								peers += strconv.Itoa(int(peersString[k])) + "." + strconv.Itoa(int(peersString[k+1])) + "." + strconv.Itoa(int(peersString[k+2])) + "." + strconv.Itoa(int(peersString[k+3])) + ":" + strconv.Itoa(int((binary.BigEndian.Uint16)([]byte(peersString[k+4:k+6])))) + "\n"
+								peer := strconv.Itoa(int(peersString[k])) + "." + strconv.Itoa(int(peersString[k+1])) + "." + strconv.Itoa(int(peersString[k+2])) + "." + strconv.Itoa(int(peersString[k+3])) + ":" + strconv.Itoa(int((binary.BigEndian.Uint16)([]byte(peersString[k+4:k+6]))))
+								peersArray = append(peersArray, peer)
+								peers += peer + "\n"
 							}
 						}
 						benMap[list[j].(string)] = list[j-1]
@@ -207,6 +210,15 @@ func main() {
 	if len(os.Args) >= 4 {
 		serverAddress = os.Args[3]
 	}
+
+	// saveTo := ""
+	// pieceId := 0
+
+	if os.Args[2] == "-o" {
+		fileName = os.Args[4]
+		// saveTo = os.Args[3]
+		// pieceId, _ = strconv.Atoi(os.Args[5])
+	}
 	if command == "decode" {
 		bencodedValue := os.Args[2]
 		fmt.Println(decodeString(bencodedValue))
@@ -220,10 +232,20 @@ func main() {
 	} else if command == "handshake" {
 		fillInfo(fileName)
 		conn, _ := net.Dial("tcp", serverAddress)
+		defer conn.Close()
 		conn.Write(getHandShakeMessage())
-		buffer := make([]byte, 512)
+		buffer := make([]byte, 100)
 		conn.Read(buffer)
 		fmt.Printf("Peer ID: %s\n", getHexValue(buffer[48:68]))
+	} else if command == "download_piece" {
+		fillInfo(fileName)
+		fmt.Println(peers)
+		conn, _ := net.Dial("tcp", peersArray[0])
+		defer conn.Close()
+		conn.Write(getHandShakeMessage())
+		buffer := make([]byte, 100)
+		conn.Read(buffer)
+		fmt.Println(buffer)
 	} else {
 		fmt.Println("Unknown command: " + command)
 		os.Exit(1)
