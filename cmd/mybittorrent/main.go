@@ -218,7 +218,7 @@ func main() {
 		conn.Write(handshakeMessage)
 		buffer := make([]byte, 512)
 		conn.Read(buffer)
-		fmt.Println(string(buffer[48:68]))
+		fmt.Printf("Peer ID: %s\n", getHexValue(buffer[48:68]))
 	} else {
 		fmt.Println("Unknown command: " + command)
 		os.Exit(1)
