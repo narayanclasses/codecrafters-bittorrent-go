@@ -212,14 +212,13 @@ func main() {
 		handshakeMessage = append(handshakeMessage, []byte("BitTorrent protocol")...)
 		handshakeMessage = append(handshakeMessage, []byte{0, 0, 0, 0, 0, 0, 0, 0}...)
 		infoHashBytes, _ := hex.DecodeString(infoHash)
-		fmt.Println(infoHashBytes)
 		handshakeMessage = append(handshakeMessage, infoHashBytes...)
 		handshakeMessage = append(handshakeMessage, []byte("00112233445566778899")...)
 
 		conn.Write(handshakeMessage)
 		buffer := make([]byte, 512)
 		conn.Read(buffer)
-		fmt.Println(string(buffer))
+		fmt.Println(string(buffer[48:68]))
 	} else {
 		fmt.Println("Unknown command: " + command)
 		os.Exit(1)
