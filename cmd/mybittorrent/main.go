@@ -171,7 +171,7 @@ func main() {
 		fillInfo(fileName)
 		// Query parameters
 		params := url.Values{}
-		params.Add("info_hash", fmt.Sprint("%d6%9f%91%e6%b2%ae%4c%54%24%68%d1%07%3a%71%d4%ea%13%87%9a%7f"))
+		params.Add("info_hash", infoHash)
 		params.Add("peer_id", "00112233445566778899")
 		params.Add("port", "6881")
 		params.Add("uploaded", "0")
