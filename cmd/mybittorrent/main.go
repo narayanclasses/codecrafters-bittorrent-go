@@ -14,7 +14,6 @@ import (
 	"os"
 	"reflect"
 	"strconv"
-	"sync"
 	"time"
 	"unicode"
 )
@@ -258,36 +257,37 @@ func getPieceBytes(conn net.Conn, pieceID int) []byte {
 	}
 	pieceLength = tempPieceLength
 
-	var wg sync.WaitGroup
+	// var wg sync.WaitGroup
 	numTasks := len(requestArray)
 
 	piecesArray := make([][]byte, numTasks)
 
 	fmt.Println(pieceLength)
 	for i := 0; i < numTasks; i++ {
-		wg.Add(1)
-		go func(taskID int) {
-			defer wg.Done()
-			var request []byte
-			// length
-			request = append(request, 0, 0, 0, 13)
-			// ID
-			request = append(request, 6)
-			// index
-			request = append(request, make([]byte, 4)...)
-			binary.BigEndian.PutUint32(request[len(request)-4:], uint32(pieceID))
-			// offset
-			request = append(request, make([]byte, 4)...)
-			binary.BigEndian.PutUint32(request[len(request)-4:], uint32(requestArray[taskID].offset))
-			// length
-			request = append(request, make([]byte, 4)...)
-			binary.BigEndian.PutUint32(request[len(request)-4:], uint32(requestArray[taskID].curPieceLen))
-			// send request
-			fmt.Println(request)
-			conn.Write(request)
-		}(i)
+		taskID := i
+		// wg.Add(1)
+		// go func(taskID int) {
+		// defer wg.Done()
+		var request []byte
+		// length
+		request = append(request, 0, 0, 0, 13)
+		// ID
+		request = append(request, 6)
+		// index
+		request = append(request, make([]byte, 4)...)
+		binary.BigEndian.PutUint32(request[len(request)-4:], uint32(pieceID))
+		// offset
+		request = append(request, make([]byte, 4)...)
+		binary.BigEndian.PutUint32(request[len(request)-4:], uint32(requestArray[taskID].offset))
+		// length
+		request = append(request, make([]byte, 4)...)
+		binary.BigEndian.PutUint32(request[len(request)-4:], uint32(requestArray[taskID].curPieceLen))
+		// send request
+		fmt.Println(request)
+		conn.Write(request)
+		// }(i)
 	}
-	wg.Wait()
+	// wg.Wait()
 	var allcombined []byte
 	total := numTasks*13 + pieceLength
 	for len(allcombined) < total {
