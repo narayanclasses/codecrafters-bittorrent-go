@@ -281,7 +281,7 @@ func getPieceBytes(conn net.Conn, pieceID int) []byte {
 			tempBuffer := make([]byte, 4+1+4+4+int(math.Pow(2, 16)))
 			bytesRead, _ := conn.Read(tempBuffer)
 			if bytesRead == 0 {
-				fmt.Println(pieceID)
+				fmt.Println(request, numTasks, pieceLength)
 			}
 			allcombined = append(allcombined, tempBuffer[:bytesRead]...)
 		}
