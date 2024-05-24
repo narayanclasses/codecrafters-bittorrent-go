@@ -215,9 +215,6 @@ func getConnection() net.Conn {
 		conn.Read(buffer)
 		fmt.Println(buffer)
 
-		conn.Read(buffer)
-		fmt.Println(buffer)
-
 		fmt.Println("-------------------------------------------------------------------------------------")
 		if buffer[0] != 0 {
 			// conn.Read(buffer[0:4])
