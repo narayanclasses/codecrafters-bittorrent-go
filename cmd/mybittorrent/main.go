@@ -303,10 +303,14 @@ func main() {
 	saveTo := ""
 	pieceId := 0
 
-	if os.Args[2] == "-o" {
+	if os.Args[1] == "download_piece" {
 		fileName = os.Args[4]
 		saveTo = os.Args[3]
 		pieceId, _ = strconv.Atoi(os.Args[5])
+	}
+	if os.Args[1] == "download" {
+		fileName = os.Args[4]
+		saveTo = os.Args[3]
 	}
 	if command == "decode" {
 		bencodedValue := os.Args[2]
@@ -333,6 +337,17 @@ func main() {
 		defer conn.Close()
 		createAndSaveFile(getPieceBytes(conn, pieceId), saveTo)
 		fmt.Printf("Piece %d downloaded to %s.", pieceId, saveTo)
+	} else if command == "download" {
+		fillInfo(fileName)
+		makeRequest()
+		conn := getConnection()
+		defer conn.Close()
+		var combinedPieces []byte
+		for i := 0; i < pieceCount; i++ {
+			combinedPieces = append(combinedPieces, getPieceBytes(conn, i)...)
+		}
+		createAndSaveFile(combinedPieces, saveTo)
+		fmt.Printf("Downloaded %s to %s.", fileName, saveTo)
 	} else {
 		fmt.Println("Unknown command: " + command)
 		os.Exit(1)
