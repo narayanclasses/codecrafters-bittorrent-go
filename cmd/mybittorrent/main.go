@@ -341,7 +341,7 @@ func main() {
 		fillInfo(fileName)
 		makeRequest()
 		conn := getConnection(0)
-		defer conn.Close()
+		// defer conn.Close()
 		var combinedPieces []byte
 		for i := 0; i < pieceCount; i++ {
 			combinedPieces = append(combinedPieces, getPieceBytes(conn, i)...)
