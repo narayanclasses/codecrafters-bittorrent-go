@@ -214,12 +214,12 @@ func getHandShakeMessage() []byte {
 func getConnection(peerId int) net.Conn {
 	conn, _ := net.Dial("tcp", peersArray[peerId])
 	conn.Write(getHandShakeMessage())
-	buffer := make([]byte, 70)
+	buffer := make([]byte, 68)
 	conn.Read(buffer)
 	if buffer[0] == 0 {
 		return getConnection(peerId + 1)
 	}
-	fmt.Println(buffer)
+	fmt.Printf("Peer %d is online...", peerId)
 	return conn
 }
 
