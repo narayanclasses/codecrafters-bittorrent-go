@@ -348,8 +348,8 @@ func main() {
 		var combinedPieces []byte
 		for i := 0; i < pieceCount; i++ {
 			conn := getConnection(0)
-			defer conn.Close()
 			combinedPieces = append(combinedPieces, getPieceBytes(conn, i)...)
+			conn.Close()
 		}
 		createAndSaveFile(combinedPieces, saveTo)
 		fmt.Printf("Downloaded %s to %s.", fileName, saveTo)
