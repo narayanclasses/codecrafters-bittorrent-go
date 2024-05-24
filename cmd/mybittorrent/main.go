@@ -100,7 +100,8 @@ func decodeString(bencodedValue string) string {
 						}
 						if list[j].(string) == "pieces" {
 							for k := 0; k < len(list[j-1].(string)); k += 20 {
-								piecesHash += "\n" + getHexValue([]byte((list[j-1].(string))[k:k+20]))
+								pieceHash := getHexValue([]byte((list[j-1].(string))[k : k+20]))
+								piecesHash += "\n" + pieceHash
 							}
 						}
 						if list[j].(string) == "peers" {
@@ -202,6 +203,30 @@ func getHandShakeMessage() []byte {
 	return handshakeMessage
 }
 
+func getConnection() net.Conn {
+	var conn net.Conn
+	for i := 0; i < len(peersArray); i++ {
+		conn, _ = net.Dial("tcp", peersArray[i])
+		conn.Write(getHandShakeMessage())
+		buffer := make([]byte, 68)
+		conn.Read(buffer)
+		fmt.Println(buffer)
+
+		conn.Read(buffer)
+		fmt.Println(buffer)
+
+		conn.Read(buffer)
+		fmt.Println(buffer)
+
+		fmt.Println("-------------------------------------------------------------------------------------")
+		if buffer[0] != 0 {
+			// conn.Read(buffer[0:4])
+			break
+		}
+	}
+	return conn
+}
+
 func main() {
 
 	command := os.Args[1]
@@ -240,16 +265,8 @@ func main() {
 	} else if command == "download_piece" {
 		fillInfo(fileName)
 		makeRequest()
-		// for i := 0; i < len(peersArray); i++ {
-		conn, _ := net.Dial("tcp", peersArray[0])
+		conn := getConnection()
 		defer conn.Close()
-		conn.Write(getHandShakeMessage())
-		buffer := make([]byte, 100)
-		conn.Read(buffer)
-		fmt.Println(buffer)
-		conn.Read(buffer)
-		fmt.Println(buffer)
-		// }
 	} else {
 		fmt.Println("Unknown command: " + command)
 		os.Exit(1)
