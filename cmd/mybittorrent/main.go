@@ -245,6 +245,7 @@ func getPieceBytes(conn net.Conn, pieceID int) []byte {
 	if pieceID == pieceCount-1 {
 		pieceLength = fileLength % pieceLength
 	}
+	fmt.Println("lengths", pieceID, pieceLength, fileLength)
 	tempPieceLength := pieceLength
 	for pieceLength > 0 {
 		var newRequest Request
@@ -340,7 +341,6 @@ func main() {
 		defer conn.Close()
 		var combinedPieces []byte
 		for i := 0; i < pieceCount; i++ {
-			fmt.Println(i)
 			combinedPieces = append(combinedPieces, getPieceBytes(conn, i)...)
 		}
 		createAndSaveFile(combinedPieces, saveTo)
