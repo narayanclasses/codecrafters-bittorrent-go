@@ -231,8 +231,8 @@ func getPieceBytes(conn net.Conn) []byte {
 	message = append(message, 0, 0, 0, 1, 2)
 	conn.Write(message)
 	buffer := make([]byte, 4+1+4+4+int(math.Pow(2, 14)))
-	conn.Read(buffer)
-	fmt.Println(buffer)
+	conn.Read(buffer[:5])
+	fmt.Println(buffer[:5])
 	return nil
 }
 
