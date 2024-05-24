@@ -253,7 +253,6 @@ func getPieceBytes(conn net.Conn, pieceID int) []byte {
 	}
 	pieceLength = tempPieceLength
 	numTasks := len(requestArray)
-	fmt.Println(numTasks)
 	for i := 0; i < numTasks; i++ {
 		var request []byte
 		// length
@@ -271,6 +270,7 @@ func getPieceBytes(conn net.Conn, pieceID int) []byte {
 		binary.BigEndian.PutUint32(request[len(request)-4:], uint32(requestArray[i].curPieceLen))
 		// send request
 		conn.Write(request)
+		fmt.Println(request)
 		// read response
 		var allcombined []byte
 		total := 13 + requestArray[i].curPieceLen
