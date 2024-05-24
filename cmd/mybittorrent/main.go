@@ -14,8 +14,14 @@ import (
 	"os"
 	"reflect"
 	"strconv"
+	"sync"
 	"unicode"
 )
+
+type Request struct {
+	curPieceLen int
+	offset      int
+}
 
 // Stack represents a stack that holds a slice of empty interfaces (to allow for different types)
 type Stack struct {
@@ -238,37 +244,59 @@ func getPieceBytes(conn net.Conn, pieceID int) []byte {
 	offset := 0
 	var pieceBytes []byte
 
+	var requestArray []Request
+
 	for pieceLength > 0 {
-		// fmt.Println(pieceLength)
-		var request []byte
-		// length
-		request = append(request, 0, 0, 0, 13)
-		// ID
-		request = append(request, 6)
-		// index
-		request = append(request, make([]byte, 4)...)
-		binary.BigEndian.PutUint32(request[len(request)-4:], uint32(pieceID))
-		// offset
-		request = append(request, make([]byte, 4)...)
-		binary.BigEndian.PutUint32(request[len(request)-4:], uint32(offset))
+		var newRequest Request
+		newRequest.curPieceLen = int(math.Min(math.Pow(2, 14), float64(pieceLength)))
+		pieceLength -= newRequest.curPieceLen
+		newRequest.offset = offset
 		offset += int(math.Pow(2, 14))
-		// length
-		request = append(request, make([]byte, 4)...)
-		curPieceLen := int(math.Min(math.Pow(2, 14), float64(pieceLength)))
-		binary.BigEndian.PutUint32(request[len(request)-4:], uint32(curPieceLen))
-		pieceLength -= curPieceLen
-		// send request
-		conn.Write(request)
-		// read response
-		var response []byte
-		tempBuffer := make([]byte, 13+int(math.Pow(2, 14)))
-		lenLeft := curPieceLen
-		for lenLeft > 0 {
+		requestArray = append(requestArray, newRequest)
+	}
+
+	var wg sync.WaitGroup
+	numTasks := len(requestArray)
+
+	piecesArray := make([][]byte, numTasks)
+
+	for i := 0; i < numTasks; i++ {
+		wg.Add(1)
+		go func(taskID int) {
+			defer wg.Done()
+			var request []byte
+			// length
+			request = append(request, 0, 0, 0, 13)
+			// ID
+			request = append(request, 6)
+			// index
+			request = append(request, make([]byte, 4)...)
+			binary.BigEndian.PutUint32(request[len(request)-4:], uint32(pieceID))
+			// offset
+			request = append(request, make([]byte, 4)...)
+			binary.BigEndian.PutUint32(request[len(request)-4:], uint32(requestArray[taskID].offset))
+			// length
+			request = append(request, make([]byte, 4)...)
+			binary.BigEndian.PutUint32(request[len(request)-4:], uint32(requestArray[taskID].curPieceLen))
+			// send request
+			conn.Write(request)
+		}(i)
+	}
+	wg.Wait()
+	for i := 0; i < pieceCount; i++ {
+		tempBuffer := make([]byte, 4+1+4+4+int(math.Pow(2, 14)))
+		bytesRead, _ := conn.Read(tempBuffer)
+		curIndex := int(binary.BigEndian.Uint32(tempBuffer[9:13]) / uint32(math.Pow(2, 14)))
+		piecesArray[curIndex] = append(piecesArray[curIndex], tempBuffer[:bytesRead]...)
+		bytesToRead := requestArray[curIndex].curPieceLen - (bytesRead - 13)
+		for bytesToRead > 0 {
 			bytesRead, _ := conn.Read(tempBuffer)
-			response = append(response, tempBuffer[:bytesRead]...)
-			lenLeft -= bytesRead
+			piecesArray[curIndex] = append(piecesArray[curIndex], tempBuffer[:bytesRead]...)
+			bytesToRead -= bytesRead
 		}
-		pieceBytes = append(pieceBytes, response[13:]...)
+	}
+	for i := 0; i < numTasks; i++ {
+		pieceBytes = append(pieceBytes, piecesArray[i][13:]...)
 	}
 	return pieceBytes
 }
