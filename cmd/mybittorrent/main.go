@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math"
 	"net"
 	"net/http"
 	"net/url"
@@ -229,7 +230,7 @@ func getPieceBytes(conn net.Conn) []byte {
 	// Interested
 	message = append(message, 0, 0, 0, 1, 2)
 	conn.Write(message)
-	buffer := make([]byte, 4+1+4+4+2^14)
+	buffer := make([]byte, 4+1+4+4+int(math.Pow(2, 14)))
 	conn.Read(buffer)
 	if buffer[4] == 1 {
 		fmt.Println("unchoke received")
