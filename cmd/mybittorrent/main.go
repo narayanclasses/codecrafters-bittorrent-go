@@ -212,12 +212,8 @@ func getConnection() net.Conn {
 		conn.Read(buffer)
 		fmt.Println(buffer)
 
-		conn.Read(buffer)
-		fmt.Println(buffer)
-
-		fmt.Println("-------------------------------------------------------------------------------------")
 		if buffer[0] != 0 {
-			// conn.Read(buffer[0:4])
+			conn.Read(buffer)
 			break
 		}
 	}
@@ -263,7 +259,9 @@ func main() {
 		fillInfo(fileName)
 		makeRequest()
 		conn := getConnection()
-		fmt.Println("We have gotten the connection")
+		if conn != nil {
+			fmt.Println("We have gotten a connection")
+		}
 		defer conn.Close()
 	} else {
 		fmt.Println("Unknown command: " + command)
