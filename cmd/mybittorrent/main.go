@@ -230,7 +230,7 @@ func getPieceBytes(conn net.Conn) []byte {
 	message = append(message, 0, 0, 0, 1, 2)
 	conn.Write(message)
 	buffer := make([]byte, 4+1+4+4+2^14)
-	conn.Read(buffer[:5])
+	conn.Read(buffer)
 	if buffer[4] == 1 {
 		fmt.Println("unchoke received")
 	}
