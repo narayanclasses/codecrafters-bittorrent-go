@@ -294,6 +294,7 @@ func getPieceBytes(conn net.Conn, pieceID int) []byte {
 	}
 
 	for i := 0; i < numTasks; i++ {
+		fmt.Println("Processing...")
 		curIndex := int(binary.BigEndian.Uint32(allcombined[i*(13+int(math.Pow(2, 14)))+9:i*(13+int(math.Pow(2, 14)))+13]) / uint32(math.Pow(2, 14)))
 		piecesArray[curIndex] = append(piecesArray[curIndex], allcombined[i*(13+int(math.Pow(2, 14))):i*(13+int(math.Pow(2, 14)))+13+requestArray[curIndex].curPieceLen]...)
 	}
