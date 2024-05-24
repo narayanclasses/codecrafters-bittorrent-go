@@ -255,11 +255,8 @@ func getPieceBytes(conn net.Conn, pieceID int) []byte {
 		requestArray = append(requestArray, newRequest)
 	}
 	pieceLength = tempPieceLength
-
-	// var wg sync.WaitGroup
 	numTasks := len(requestArray)
 
-	piecesArray := make([][]byte, numTasks)
 	for i := 0; i < numTasks; i++ {
 		var request []byte
 		// length
