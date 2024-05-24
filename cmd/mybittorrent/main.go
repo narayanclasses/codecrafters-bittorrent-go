@@ -253,7 +253,7 @@ func getPieceBytes(conn net.Conn, pieceID int) []byte {
 	}
 	pieceLength = tempPieceLength
 	numTasks := len(requestArray)
-
+	fmt.Println(numTasks)
 	for i := 0; i < numTasks; i++ {
 		var request []byte
 		// length
