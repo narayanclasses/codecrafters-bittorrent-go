@@ -236,8 +236,8 @@ func getPieceBytes(conn net.Conn, pieceID int) []byte {
 	// Unchoke
 	conn.Read(buffer[:5])
 	offset := 0
+	var pieceBytes []byte
 	for pieceLength > 0 {
-		fmt.Println(pieceLength)
 		var request []byte
 		// length
 		request = append(request, 0, 0, 0, 13)
@@ -252,11 +252,17 @@ func getPieceBytes(conn net.Conn, pieceID int) []byte {
 		offset += int(math.Pow(2, 14))
 		// length
 		request = append(request, make([]byte, 4)...)
-		binary.BigEndian.PutUint32(request[len(request)-4:], uint32(int(math.Min(math.Pow(2, 14), float64(pieceLength)))))
-		pieceLength -= int(math.Pow(2, 14))
-		fmt.Println(request)
+		curPieceLen := int(math.Min(math.Pow(2, 14), float64(pieceLength)))
+		binary.BigEndian.PutUint32(request[len(request)-4:], uint32(curPieceLen))
+		pieceLength -= curPieceLen
+		// send request
+		conn.Write(request)
+		// read response
+		response := make([]byte, 4+1+4+4+int(math.Pow(2, 14)))
+		conn.Read(response)
+		pieceBytes = append(pieceBytes, response[13:13+pieceLength]...)
 	}
-	return nil
+	return pieceBytes
 }
 
 func main() {
