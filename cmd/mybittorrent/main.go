@@ -260,13 +260,7 @@ func getPieceBytes(conn net.Conn, pieceID int) []byte {
 	numTasks := len(requestArray)
 
 	piecesArray := make([][]byte, numTasks)
-
-	fmt.Println(pieceLength)
 	for i := 0; i < numTasks; i++ {
-		taskID := i
-		// wg.Add(1)
-		// go func(taskID int) {
-		// defer wg.Done()
 		var request []byte
 		// length
 		request = append(request, 0, 0, 0, 13)
@@ -277,30 +271,22 @@ func getPieceBytes(conn net.Conn, pieceID int) []byte {
 		binary.BigEndian.PutUint32(request[len(request)-4:], uint32(pieceID))
 		// offset
 		request = append(request, make([]byte, 4)...)
-		binary.BigEndian.PutUint32(request[len(request)-4:], uint32(requestArray[taskID].offset))
+		binary.BigEndian.PutUint32(request[len(request)-4:], uint32(requestArray[i].offset))
 		// length
 		request = append(request, make([]byte, 4)...)
-		binary.BigEndian.PutUint32(request[len(request)-4:], uint32(requestArray[taskID].curPieceLen))
+		binary.BigEndian.PutUint32(request[len(request)-4:], uint32(requestArray[i].curPieceLen))
 		// send request
 		conn.Write(request)
-		// }(i)
-	}
-	// wg.Wait()
-	var allcombined []byte
-	total := numTasks*13 + pieceLength
-	for len(allcombined) < total {
-		tempBuffer := make([]byte, 4+1+4+4+int(math.Pow(2, 16)))
-		bytesRead, _ := conn.Read(tempBuffer)
-		fmt.Println(bytesRead)
-		allcombined = append(allcombined, tempBuffer[:bytesRead]...)
-	}
-
-	for i := 0; i < numTasks; i++ {
-		curIndex := int(binary.BigEndian.Uint32(allcombined[i*(13+int(math.Pow(2, 14)))+9:i*(13+int(math.Pow(2, 14)))+13]) / uint32(math.Pow(2, 14)))
-		piecesArray[curIndex] = append(piecesArray[curIndex], allcombined[i*(13+int(math.Pow(2, 14))):i*(13+int(math.Pow(2, 14)))+13+requestArray[curIndex].curPieceLen]...)
-	}
-	for i := 0; i < numTasks; i++ {
-		pieceBytes = append(pieceBytes, piecesArray[i][13:]...)
+		// read response
+		var allcombined []byte
+		total := 13 + requestArray[i].curPieceLen
+		for len(allcombined) < total {
+			tempBuffer := make([]byte, 4+1+4+4+int(math.Pow(2, 16)))
+			bytesRead, _ := conn.Read(tempBuffer)
+			fmt.Println(bytesRead)
+			allcombined = append(allcombined, tempBuffer[:bytesRead]...)
+		}
+		pieceBytes = append(pieceBytes, allcombined[13:]...)
 	}
 	return pieceBytes
 }
