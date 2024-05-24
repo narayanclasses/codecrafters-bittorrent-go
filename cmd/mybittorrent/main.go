@@ -325,7 +325,7 @@ func main() {
 	} else if command == "download_piece" {
 		fillInfo(fileName)
 		makeRequest()
-		conn := getConnection()
+		conn := getConnection(0)
 		defer conn.Close()
 		createAndSaveFile(getPieceBytes(conn, pieceId), saveTo)
 		fmt.Printf("Piece %d downloaded to %s.", pieceId, saveTo)
