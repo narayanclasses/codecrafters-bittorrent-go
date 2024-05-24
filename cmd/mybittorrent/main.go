@@ -13,7 +13,6 @@ import (
 	"os"
 	"reflect"
 	"strconv"
-	"time"
 	"unicode"
 )
 
@@ -241,16 +240,13 @@ func main() {
 	} else if command == "download_piece" {
 		fillInfo(fileName)
 		makeRequest()
-		conn, _ := net.Dial("tcp", peersArray[0])
-		defer conn.Close()
-		conn.Write(getHandShakeMessage())
-		buffer := make([]byte, 68)
-		conn.Read(buffer)
-		fmt.Println(buffer)
-		for {
+		for i := 0; i < len(peersArray); i++ {
+			conn, _ := net.Dial("tcp", peersArray[i])
+			defer conn.Close()
+			conn.Write(getHandShakeMessage())
+			buffer := make([]byte, 512)
 			conn.Read(buffer)
 			fmt.Println(buffer)
-			time.Sleep(3 * time.Second)
 		}
 	} else {
 		fmt.Println("Unknown command: " + command)
