@@ -340,6 +340,7 @@ func main() {
 		defer conn.Close()
 		var combinedPieces []byte
 		for i := 0; i < pieceCount; i++ {
+			fmt.Println(i)
 			combinedPieces = append(combinedPieces, getPieceBytes(conn, i)...)
 		}
 		createAndSaveFile(combinedPieces, saveTo)
