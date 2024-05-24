@@ -224,6 +224,10 @@ func createAndSaveFile(pieceBytes []byte, filePath string) {
 	file.Write(pieceBytes)
 }
 
+func getPieceBytes(conn net.Conn) []byte {
+	return []byte{'a'}
+}
+
 func main() {
 
 	command := os.Args[1]
@@ -264,7 +268,7 @@ func main() {
 		makeRequest()
 		conn := getConnection()
 		defer conn.Close()
-		createAndSaveFile([]byte{'a'}, saveTo)
+		createAndSaveFile(getPieceBytes(conn), saveTo)
 		fmt.Printf("Piece %d downloaded to %s.", pieceId, saveTo)
 	} else {
 		fmt.Println("Unknown command: " + command)
