@@ -245,7 +245,6 @@ func getPieceBytes(conn net.Conn, pieceID int) []byte {
 	if pieceID == pieceCount-1 {
 		pieceLength = fileLength % pieceLength
 	}
-	fmt.Println(fileLength, pieceLength)
 	tempPieceLength := pieceLength
 	for pieceLength > 0 {
 		var newRequest Request
@@ -280,9 +279,9 @@ func getPieceBytes(conn net.Conn, pieceID int) []byte {
 		for len(allcombined) < total {
 			tempBuffer := make([]byte, total-len(allcombined))
 			bytesRead, _ := conn.Read(tempBuffer)
+			fmt.Println(bytesRead)
 			allcombined = append(allcombined, tempBuffer[:bytesRead]...)
 		}
-		fmt.Println(len(allcombined) - total)
 		pieceBytes = append(pieceBytes, allcombined[13:]...)
 	}
 	return pieceBytes
