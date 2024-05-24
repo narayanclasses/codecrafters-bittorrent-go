@@ -239,11 +239,18 @@ func getPieceBytes(conn net.Conn) []byte {
 	fmt.Println(pieceCount, pieceLength)
 	for i := 0; i < pieceCount; i++ {
 		var request []byte
+		// length
 		request = append(request, 0, 0, 0, 13)
+		// ID
 		request = append(request, 6)
+		// index
+		request = append(request, make([]byte, 4)...)
+		binary.BigEndian.PutUint32(request[len(request)-4:], uint32(i))
+		// offset
 		request = append(request, make([]byte, 4)...)
 		binary.BigEndian.PutUint32(request[len(request)-4:], uint32(offset))
 		offset += int(math.Pow(2, 14))
+		// length
 		request = append(request, make([]byte, 4)...)
 		binary.BigEndian.PutUint32(request[len(request)-4:], uint32(math.Min(math.Pow(2, 14), float64(pieceLength))))
 		pieceLength -= int(math.Pow(2, 14))
