@@ -72,6 +72,7 @@ func getHexValue(input []byte) string {
 var tracker string
 var fileLength int
 var pieceLength int
+var pieceCount int
 var piecesHash string
 var infoHash string
 var peers string
@@ -103,6 +104,7 @@ func decodeString(bencodedValue string) string {
 							for k := 0; k < len(list[j-1].(string)); k += 20 {
 								pieceHash := getHexValue([]byte((list[j-1].(string))[k : k+20]))
 								piecesHash += "\n" + pieceHash
+								pieceCount++
 							}
 						}
 						if list[j].(string) == "peers" {
@@ -231,8 +233,22 @@ func getPieceBytes(conn net.Conn) []byte {
 	message = append(message, 0, 0, 0, 1, 2)
 	conn.Write(message)
 	buffer := make([]byte, 4+1+4+4+int(math.Pow(2, 14)))
+	// Unchoke
 	conn.Read(buffer[:5])
-	fmt.Println(buffer[:5])
+	offset := 0
+	fmt.Println(pieceCount, pieceLength)
+	for i := 0; i < pieceCount; i++ {
+		var request []byte
+		request = append(request, 0, 0, 0, 13)
+		request = append(request, 6)
+		request = append(request, make([]byte, 4)...)
+		binary.BigEndian.PutUint32(request[len(request)-4:], uint32(offset))
+		offset += int(math.Pow(2, 14))
+		request = append(request, make([]byte, 4)...)
+		binary.BigEndian.PutUint32(request[len(request)-4:], uint32(math.Min(math.Pow(2, 14), float64(pieceLength))))
+		pieceLength -= int(math.Pow(2, 14))
+		fmt.Println(request)
+	}
 	return nil
 }
 
