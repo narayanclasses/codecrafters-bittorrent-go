@@ -210,8 +210,6 @@ func getConnection() net.Conn {
 		conn.Write(getHandShakeMessage())
 		buffer := make([]byte, 68)
 		conn.Read(buffer)
-		fmt.Println(buffer)
-
 		if buffer[0] != 0 {
 			conn.Read(buffer)
 			break
@@ -229,13 +227,13 @@ func main() {
 		serverAddress = os.Args[3]
 	}
 
-	// saveTo := ""
-	// pieceId := 0
+	saveTo := ""
+	pieceId := 0
 
 	if os.Args[2] == "-o" {
 		fileName = os.Args[4]
-		// saveTo = os.Args[3]
-		// pieceId, _ = strconv.Atoi(os.Args[5])
+		saveTo = os.Args[3]
+		pieceId, _ = strconv.Atoi(os.Args[5])
 	}
 	if command == "decode" {
 		bencodedValue := os.Args[2]
@@ -259,10 +257,9 @@ func main() {
 		fillInfo(fileName)
 		makeRequest()
 		conn := getConnection()
-		if conn != nil {
-			fmt.Println("We have gotten a connection")
-		}
 		defer conn.Close()
+		// pieceBytes := getPieceByte(conn)
+		fmt.Printf("Piece %d downloaded to %s.", pieceId, saveTo)
 	} else {
 		fmt.Println("Unknown command: " + command)
 		os.Exit(1)
