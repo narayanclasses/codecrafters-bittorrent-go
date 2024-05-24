@@ -238,7 +238,6 @@ func getPieceBytes(conn net.Conn, pieceID int) []byte {
 	offset := 0
 	var pieceBytes []byte
 	for pieceLength > 0 {
-		fmt.Println(pieceLength)
 		var request []byte
 		// length
 		request = append(request, 0, 0, 0, 13)
@@ -261,7 +260,7 @@ func getPieceBytes(conn net.Conn, pieceID int) []byte {
 		// read response
 		response := make([]byte, 4+1+4+4+int(math.Pow(2, 14)))
 		conn.Read(response)
-		fmt.Println(response[:13])
+		fmt.Println(response[:20])
 		pieceBytes = append(pieceBytes, response[13:13+curPieceLen]...)
 	}
 	return pieceBytes
