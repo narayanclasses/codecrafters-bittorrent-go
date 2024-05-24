@@ -286,35 +286,17 @@ func getPieceBytes(conn net.Conn, pieceID int) []byte {
 	}
 	wg.Wait()
 	var allcombined []byte
-	total := 0
-	fmt.Println(numTasks, pieceLength)
-	for {
+	total := numTasks*13 + pieceLength
+	for len(allcombined) < total {
 		tempBuffer := make([]byte, 4+1+4+4+int(math.Pow(2, 14)))
 		bytesRead, _ := conn.Read(tempBuffer)
 		allcombined = append(allcombined, tempBuffer[:bytesRead]...)
-		total += bytesRead
-		fmt.Println(total)
 	}
 
-	// for i := 0; i < numTasks; i++ {
-
-	// 	if bytesRead == 0 {
-	// 		i--
-	// 		continue
-	// 	}
-	// 	curIndex := int(binary.BigEndian.Uint32(tempBuffer[9:13]) / uint32(math.Pow(2, 14)))
-	// 	piecesArray[curIndex] = append(piecesArray[curIndex], tempBuffer[:bytesRead]...)
-
-	// 	bytesToRead := requestArray[curIndex].curPieceLen - (bytesRead - 13)
-
-	// 	fmt.Println(bytesRead, tempBuffer[:13], binary.BigEndian.Uint32(tempBuffer[9:13]), curIndex, len(piecesArray[curIndex]), requestArray[curIndex].curPieceLen, bytesToRead)
-	// 	for bytesToRead > 0 {
-	// 		bytesRead, _ := conn.Read(tempBuffer)
-	// 		fmt.Println(bytesRead)
-	// 		piecesArray[curIndex] = append(piecesArray[curIndex], tempBuffer[:bytesRead]...)
-	// 		bytesToRead -= bytesRead
-	// 	}
-	// }
+	for i := 0; i < numTasks; i++ {
+		curIndex := int(binary.BigEndian.Uint32(allcombined[i*(13+int(math.Pow(2, 14)))+9:i*(13+int(math.Pow(2, 14)))+13]) / uint32(math.Pow(2, 14)))
+		piecesArray[curIndex] = append(piecesArray[curIndex], allcombined[i*(13+int(math.Pow(2, 14))):i*(13+int(math.Pow(2, 14)))+13+requestArray[curIndex].curPieceLen]...)
+	}
 	for i := 0; i < numTasks; i++ {
 		pieceBytes = append(pieceBytes, piecesArray[i][13:]...)
 	}
