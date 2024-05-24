@@ -252,7 +252,7 @@ func getPieceBytes(conn net.Conn) []byte {
 		offset += int(math.Pow(2, 14))
 		// length
 		request = append(request, make([]byte, 4)...)
-		binary.BigEndian.PutUint32(request[len(request)-4:], uint32(math.Min(math.Pow(2, 14), float64(pieceLength))))
+		binary.BigEndian.PutUint32(request[len(request)-4:], uint32(int(math.Min(math.Pow(2, 14), float64(pieceLength)))))
 		pieceLength -= int(math.Pow(2, 14))
 		fmt.Println(request)
 	}
