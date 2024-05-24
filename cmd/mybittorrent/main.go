@@ -274,6 +274,7 @@ func getPieceBytes(conn net.Conn, pieceID int) []byte {
 		binary.BigEndian.PutUint32(request[len(request)-4:], uint32(requestArray[i].curPieceLen))
 		// send request
 		conn.Write(request)
+		fmt.Println(request)
 		// read response
 		var allcombined []byte
 		total := 13 + requestArray[i].curPieceLen
@@ -281,10 +282,6 @@ func getPieceBytes(conn net.Conn, pieceID int) []byte {
 			tempBuffer := make([]byte, total-len(allcombined))
 			bytesRead, _ := conn.Read(tempBuffer)
 			fmt.Println(total-len(allcombined), bytesRead)
-			if bytesRead == 0 {
-				fmt.Println("bytesRead", bytesRead)
-				break
-			}
 			allcombined = append(allcombined, tempBuffer[:bytesRead]...)
 		}
 		fmt.Println(len(allcombined))
