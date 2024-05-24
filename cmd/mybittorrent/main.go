@@ -214,11 +214,12 @@ func getHandShakeMessage() []byte {
 func getConnection(peerId int) net.Conn {
 	conn, _ := net.Dial("tcp", peersArray[peerId])
 	conn.Write(getHandShakeMessage())
-	buffer := make([]byte, 100)
+	buffer := make([]byte, 68)
 	conn.Read(buffer)
 	if buffer[0] == 0 {
 		return getConnection(peerId + 1)
 	}
+	conn.Read(buffer)
 	fmt.Printf("Peer %d is online...\n", peerId)
 	return conn
 }
@@ -234,10 +235,9 @@ func getPieceBytes(conn net.Conn, pieceID int) []byte {
 	// Interested
 	message = append(message, 0, 0, 0, 1, 2)
 	conn.Write(message)
-	buffer := make([]byte, 100)
+	buffer := make([]byte, 5)
 	// Unchoke
 	conn.Read(buffer)
-	fmt.Println(buffer)
 	offset := 0
 	var pieceBytes []byte
 
