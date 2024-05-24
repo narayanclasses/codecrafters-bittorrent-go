@@ -268,7 +268,6 @@ func getPieceBytes(conn net.Conn, pieceID int) []byte {
 			response = append(response, tempBuffer[:bytesRead]...)
 			lenLeft -= bytesRead
 		}
-		fmt.Println(response[:13])
 		pieceBytes = append(pieceBytes, response[13:]...)
 	}
 	return pieceBytes
