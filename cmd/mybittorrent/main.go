@@ -246,7 +246,9 @@ func main() {
 			conn.Write(getHandShakeMessage())
 			buffer := make([]byte, 512)
 			conn.Read(buffer)
-			fmt.Println(buffer)
+			for j := 0; j < len(buffer); j++ {
+				fmt.Println(j, buffer[j])
+			}
 		}
 	} else {
 		fmt.Println("Unknown command: " + command)
