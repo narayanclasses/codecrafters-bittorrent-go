@@ -230,7 +230,7 @@ func getPieceBytes(conn net.Conn, pieceID int) []byte {
 	// Interested
 	message = append(message, 0, 0, 0, 1, 2)
 	conn.Write(message)
-	buffer := make([]byte, 4+1+4+4+int(math.Pow(2, 14)))
+	buffer := make([]byte, 5)
 	// Unchoke
 	conn.Read(buffer[:5])
 	offset := 0
@@ -338,7 +338,6 @@ func main() {
 		defer conn.Close()
 		var combinedPieces []byte
 		for i := 0; i < pieceCount; i++ {
-			fmt.Println(i)
 			combinedPieces = append(combinedPieces, getPieceBytes(conn, i)...)
 		}
 		createAndSaveFile(combinedPieces, saveTo)
