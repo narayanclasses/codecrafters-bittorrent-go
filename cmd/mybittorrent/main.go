@@ -244,7 +244,9 @@ func main() {
 		conn, _ := net.Dial("tcp", peersArray[0])
 		defer conn.Close()
 		conn.Write(getHandShakeMessage())
-		buffer := make([]byte, 512)
+		buffer := make([]byte, 100)
+		conn.Read(buffer)
+		fmt.Println(buffer)
 		conn.Read(buffer)
 		fmt.Println(buffer)
 		// }
