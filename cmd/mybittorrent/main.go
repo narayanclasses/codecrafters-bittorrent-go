@@ -260,7 +260,7 @@ func getPieceBytes(conn net.Conn, pieceID int) []byte {
 		// read response
 		response := make([]byte, 4+1+4+4+int(math.Pow(2, 14)))
 		conn.Read(response)
-		pieceBytes = append(pieceBytes, response[13:13+pieceLength]...)
+		pieceBytes = append(pieceBytes, response[13:13+curPieceLen]...)
 	}
 	return pieceBytes
 }
