@@ -219,6 +219,7 @@ func getConnection() net.Conn {
 		buffer := make([]byte, 68)
 		conn.Read(buffer)
 		if buffer[0] != 0 {
+			fmt.Println("Reading from peer", i)
 			conn.Read(buffer)
 			break
 		}
@@ -280,9 +281,6 @@ func getPieceBytes(conn net.Conn, pieceID int) []byte {
 		for len(allcombined) < total {
 			tempBuffer := make([]byte, 4+1+4+4+int(math.Pow(2, 16)))
 			bytesRead, _ := conn.Read(tempBuffer)
-			if bytesRead == 0 {
-				fmt.Println(request, numTasks, pieceLength)
-			}
 			allcombined = append(allcombined, tempBuffer[:bytesRead]...)
 		}
 		pieceBytes = append(pieceBytes, allcombined[13:]...)
