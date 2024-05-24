@@ -294,7 +294,7 @@ func getPieceBytes(conn net.Conn, pieceID int) []byte {
 		curIndex := int(binary.BigEndian.Uint32(tempBuffer[9:13]) / uint32(math.Pow(2, 14)))
 		piecesArray[curIndex] = append(piecesArray[curIndex], tempBuffer[:bytesRead]...)
 		bytesToRead := requestArray[curIndex].curPieceLen - (bytesRead - 13)
-		for {
+		for bytesToRead > 0 {
 			bytesRead, _ := conn.Read(tempBuffer)
 			piecesArray[curIndex] = append(piecesArray[curIndex], tempBuffer[:bytesRead]...)
 			bytesToRead -= bytesRead
