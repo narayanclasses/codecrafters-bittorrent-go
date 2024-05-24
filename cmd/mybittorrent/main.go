@@ -219,7 +219,7 @@ func getConnection(peerId int) net.Conn {
 	if buffer[0] == 0 {
 		return getConnection(peerId + 1)
 	}
-	fmt.Printf("Peer %d is online...", peerId)
+	fmt.Printf("Peer %d is online...\n", peerId)
 	return conn
 }
 
