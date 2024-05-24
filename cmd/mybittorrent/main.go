@@ -345,10 +345,10 @@ func main() {
 	} else if command == "download" {
 		fillInfo(fileName)
 		makeRequest()
-		conn := getConnection(0)
-		// defer conn.Close()
 		var combinedPieces []byte
 		for i := 0; i < pieceCount; i++ {
+			conn := getConnection(0)
+			defer conn.Close()
 			combinedPieces = append(combinedPieces, getPieceBytes(conn, i)...)
 		}
 		createAndSaveFile(combinedPieces, saveTo)
