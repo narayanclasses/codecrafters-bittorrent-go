@@ -220,7 +220,6 @@ func getConnection(peerId int) net.Conn {
 		return getConnection(peerId + 1)
 	}
 	fmt.Printf("Peer %d is online...\n", peerId)
-	fmt.Println(buffer)
 	return conn
 }
 
@@ -235,9 +234,9 @@ func getPieceBytes(conn net.Conn, pieceID int) []byte {
 	// Interested
 	message = append(message, 0, 0, 0, 1, 2)
 	conn.Write(message)
-	buffer := make([]byte, 5)
+	buffer := make([]byte, 100)
 	// Unchoke
-	conn.Read(buffer[:5])
+	conn.Read(buffer)
 	offset := 0
 	var pieceBytes []byte
 
