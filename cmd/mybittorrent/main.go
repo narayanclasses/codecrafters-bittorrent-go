@@ -339,7 +339,7 @@ func main() {
 	} else if command == "download" {
 		fillInfo(fileName)
 		makeRequest()
-		conn := getConnection(1)
+		conn := getConnection(2)
 		defer conn.Close()
 		var combinedPieces []byte
 		for i := 0; i < pieceCount; i++ {
