@@ -263,6 +263,7 @@ func getPieceBytes(conn net.Conn, pieceID int) []byte {
 
 	piecesArray := make([][]byte, numTasks)
 
+	fmt.Println(pieceLength)
 	for i := 0; i < numTasks; i++ {
 		wg.Add(1)
 		go func(taskID int) {
@@ -282,6 +283,7 @@ func getPieceBytes(conn net.Conn, pieceID int) []byte {
 			request = append(request, make([]byte, 4)...)
 			binary.BigEndian.PutUint32(request[len(request)-4:], uint32(requestArray[taskID].curPieceLen))
 			// send request
+			fmt.Println(request)
 			conn.Write(request)
 		}(i)
 	}
