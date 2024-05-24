@@ -214,7 +214,7 @@ func getHandShakeMessage() []byte {
 func getConnection(peerId int) net.Conn {
 	conn, _ := net.Dial("tcp", peersArray[peerId])
 	conn.Write(getHandShakeMessage())
-	buffer := make([]byte, 68)
+	buffer := make([]byte, 70)
 	conn.Read(buffer)
 	fmt.Println(buffer)
 	return conn
