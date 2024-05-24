@@ -237,6 +237,7 @@ func getPieceBytes(conn net.Conn, pieceID int) []byte {
 	conn.Read(buffer[:5])
 	offset := 0
 	var pieceBytes []byte
+
 	for pieceLength > 0 {
 		// fmt.Println(pieceLength)
 		var request []byte
@@ -260,7 +261,7 @@ func getPieceBytes(conn net.Conn, pieceID int) []byte {
 		conn.Write(request)
 		// read response
 		var response []byte
-		tempBuffer := make([]byte, int(math.Pow(2, 15)))
+		tempBuffer := make([]byte, 13+int(math.Pow(2, 14)))
 		lenLeft := curPieceLen
 		for lenLeft > 0 {
 			bytesRead, _ := conn.Read(tempBuffer)
