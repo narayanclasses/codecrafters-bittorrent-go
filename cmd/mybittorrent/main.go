@@ -266,6 +266,7 @@ func main() {
 		fillInfo(fileName)
 		makeRequest()
 		conn := getConnection()
+		fmt.Println("We have gotten the connection")
 		defer conn.Close()
 	} else {
 		fmt.Println("Unknown command: " + command)
