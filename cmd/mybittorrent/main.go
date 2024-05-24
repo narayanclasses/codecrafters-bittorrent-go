@@ -244,11 +244,9 @@ func main() {
 			conn, _ := net.Dial("tcp", peersArray[i])
 			defer conn.Close()
 			conn.Write(getHandShakeMessage())
-			buffer := make([]byte, 512)
+			buffer := make([]byte, 128)
 			conn.Read(buffer)
-			for j := 0; j < len(buffer); j++ {
-				fmt.Println(j, buffer[j])
-			}
+			fmt.Println(i, buffer)
 		}
 	} else {
 		fmt.Println("Unknown command: " + command)
