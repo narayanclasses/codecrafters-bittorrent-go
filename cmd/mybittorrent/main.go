@@ -216,6 +216,7 @@ func getConnection(peerId int) net.Conn {
 	conn.Write(getHandShakeMessage())
 	buffer := make([]byte, 68)
 	conn.Read(buffer)
+	fmt.Println(buffer)
 	return conn
 }
 
