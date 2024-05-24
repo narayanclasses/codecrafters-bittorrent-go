@@ -276,6 +276,7 @@ func getPieceBytes(conn net.Conn, pieceID int) []byte {
 		for len(allcombined) < total {
 			tempBuffer := make([]byte, total-len(allcombined))
 			bytesRead, _ := conn.Read(tempBuffer)
+			fmt.Println(total-len(allcombined), bytesRead)
 			if bytesRead == 0 {
 				fmt.Println("bytesRead", bytesRead)
 				break
