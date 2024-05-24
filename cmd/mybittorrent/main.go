@@ -237,6 +237,7 @@ func getPieceBytes(conn net.Conn, pieceID int) []byte {
 	buffer := make([]byte, 100)
 	// Unchoke
 	conn.Read(buffer)
+	fmt.Println(buffer)
 	offset := 0
 	var pieceBytes []byte
 
