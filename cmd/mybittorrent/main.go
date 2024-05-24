@@ -227,7 +227,7 @@ func createAndSaveFile(pieceBytes []byte, filePath string) {
 	file.Write(pieceBytes)
 }
 
-func getPieceBytes(conn net.Conn) []byte {
+func getPieceBytes(conn net.Conn, pieceID int) []byte {
 	var message []byte
 	// Interested
 	message = append(message, 0, 0, 0, 1, 2)
@@ -236,8 +236,7 @@ func getPieceBytes(conn net.Conn) []byte {
 	// Unchoke
 	conn.Read(buffer[:5])
 	offset := 0
-	fmt.Println(pieceCount, pieceLength)
-	for i := 0; i < pieceCount; i++ {
+	for pieceLength > 0 {
 		var request []byte
 		// length
 		request = append(request, 0, 0, 0, 13)
@@ -245,7 +244,7 @@ func getPieceBytes(conn net.Conn) []byte {
 		request = append(request, 6)
 		// index
 		request = append(request, make([]byte, 4)...)
-		binary.BigEndian.PutUint32(request[len(request)-4:], uint32(i))
+		binary.BigEndian.PutUint32(request[len(request)-4:], uint32(pieceID))
 		// offset
 		request = append(request, make([]byte, 4)...)
 		binary.BigEndian.PutUint32(request[len(request)-4:], uint32(offset))
@@ -299,7 +298,7 @@ func main() {
 		makeRequest()
 		conn := getConnection()
 		defer conn.Close()
-		createAndSaveFile(getPieceBytes(conn), saveTo)
+		createAndSaveFile(getPieceBytes(conn, pieceId), saveTo)
 		fmt.Printf("Piece %d downloaded to %s.", pieceId, saveTo)
 	} else {
 		fmt.Println("Unknown command: " + command)
