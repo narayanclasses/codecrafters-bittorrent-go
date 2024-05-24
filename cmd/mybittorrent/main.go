@@ -241,6 +241,7 @@ func getPieceBytes(conn net.Conn, pieceID int) []byte {
 	if pieceID == pieceCount-1 {
 		pieceLength = fileLength % pieceLength
 	}
+	fmt.Println(fileLength, pieceLength)
 	tempPieceLength := pieceLength
 	for pieceLength > 0 {
 		var newRequest Request
