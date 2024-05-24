@@ -214,12 +214,13 @@ func getHandShakeMessage() []byte {
 func getConnection(peerId int) net.Conn {
 	conn, _ := net.Dial("tcp", peersArray[peerId])
 	conn.Write(getHandShakeMessage())
-	buffer := make([]byte, 68)
+	buffer := make([]byte, 100)
 	conn.Read(buffer)
 	if buffer[0] == 0 {
 		return getConnection(peerId + 1)
 	}
 	fmt.Printf("Peer %d is online...\n", peerId)
+	fmt.Println(buffer)
 	return conn
 }
 
@@ -339,7 +340,7 @@ func main() {
 	} else if command == "download" {
 		fillInfo(fileName)
 		makeRequest()
-		conn := getConnection(2)
+		conn := getConnection(0)
 		defer conn.Close()
 		var combinedPieces []byte
 		for i := 0; i < pieceCount; i++ {
