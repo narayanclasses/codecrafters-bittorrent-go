@@ -282,7 +282,7 @@ func getPieceBytes(conn net.Conn, pieceID int) []byte {
 		var allcombined []byte
 		total := 13 + requestArray[i].curPieceLen
 		for len(allcombined) < total {
-			tempBuffer := make([]byte, 4+1+4+4+int(math.Pow(2, 16)))
+			tempBuffer := make([]byte, total-len(allcombined))
 			bytesRead, _ := conn.Read(tempBuffer)
 			allcombined = append(allcombined, tempBuffer[:bytesRead]...)
 		}
